@@ -101,7 +101,7 @@
   .menu-body hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
 
   /* tabs */
-  .tabs{display:flex;gap:2px;margin:18px 0 20px;border-bottom:1px solid var(--line);overflow-x:auto}
+  .tabs{display:flex;gap:2px;margin:18px 0 20px;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden}
   .tab{
     appearance:none;background:none;border:0;border-bottom:2px solid transparent;
     padding:10px 14px;color:var(--muted);font-weight:650;cursor:pointer;white-space:nowrap;
@@ -142,10 +142,9 @@
   .sets-head{display:flex;align-items:baseline;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;margin:18px 0 8px}
   .sets-head>span:first-child{font-size:11.5px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
   .sets{display:grid;gap:8px}
-  .set-row{display:grid;grid-template-columns:24px minmax(0,1fr) 90px 32px;align-items:center;gap:8px}
+  .set-row{display:grid;grid-template-columns:24px minmax(0,1fr) 32px;align-items:center;gap:8px;max-width:300px}
   .set-num{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
   .set-row .icon-btn{width:32px;height:32px;font-size:13px}
-  .note-field{margin-top:16px}
   .form-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px}
   .spacer{flex:1 1 auto}
   .form-total{font-weight:700;color:var(--muted);font-size:14px;white-space:nowrap}
@@ -177,8 +176,6 @@
   .entry-ex{font-weight:650}
   .entry-total{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
   .entry-sets{margin-top:2px;font-size:13.5px;color:var(--muted);word-break:break-word}
-  .entry-sets .muted{color:var(--muted);opacity:.85}
-  .entry-note{margin-top:5px;font-size:13px;color:var(--muted);font-style:italic;word-break:break-word}
   .entry-actions{display:flex;gap:2px;flex:none}
 
   .day{display:grid;gap:8px;margin-bottom:18px}
@@ -261,7 +258,7 @@
     .wrap{padding:16px 12px 44px;padding-top:calc(16px + env(safe-area-inset-top))}
     .form-top{grid-template-columns:1fr;gap:12px}
     .card{padding:15px}
-    .set-row{grid-template-columns:20px minmax(0,1fr) 78px 32px;gap:6px}
+    .set-row{grid-template-columns:20px minmax(0,1fr) 32px;gap:6px}
     .form-actions{gap:8px;margin-top:14px}
     .form-actions .spacer{display:none}
     #add-set,#copy-last{flex:1 1 auto;justify-content:center}
@@ -343,14 +340,9 @@
 
         <div class="sets-head">
           <span>Подходы</span>
-          <span class="hint">повторы · вес, кг — по желанию</span>
+          <span class="hint">повторы в каждом подходе</span>
         </div>
         <div id="sets" class="sets"></div>
-
-        <label class="field note-field">
-          <span>Заметка</span>
-          <input type="text" id="f-note" maxlength="300" placeholder="техника, самочувствие, пульс…">
-        </label>
 
         <div class="form-actions">
           <button type="button" id="add-set" class="btn ghost">+ подход</button>
@@ -464,9 +456,6 @@
     var r = Math.round(v * 10) / 10;
     return Number.isInteger(r) ? fmtNum(r) : String(r).replace('.', ',');
   }
-  function fmtWeight(w) {
-    return Number.isInteger(w) ? String(w) : String(w).replace('.', ',');
-  }
   function plural(n, one, few, many) {
     var a = Math.abs(n) % 100, b = a % 10;
     if (a > 10 && a < 20) return many;
@@ -527,9 +516,7 @@
       if (!s || typeof s !== 'object') return;
       var reps = Math.round(Number(s.reps));
       if (!isFinite(reps) || reps <= 0) return;
-      var weight = (s.weight === null || s.weight === undefined || s.weight === '') ? null : Number(s.weight);
-      if (weight !== null && (!isFinite(weight) || weight <= 0)) weight = null;
-      sets.push({ reps: reps, weight: weight });
+      sets.push({ reps: reps });
     });
     if (!sets.length) return null;
 
@@ -538,7 +525,6 @@
       date: date,
       ex: raw.ex,
       sets: sets,
-      note: typeof raw.note === 'string' ? raw.note.slice(0, 300) : '',
       createdAt: isFinite(Number(raw.createdAt)) ? Number(raw.createdAt) : Date.now()
     };
   }
@@ -725,16 +711,14 @@
     });
   }
 
-  function addSetRow(reps, weight, focus) {
+  function addSetRow(reps, focus) {
     var row = document.createElement('div');
     row.className = 'set-row';
     row.innerHTML =
       '<span class="set-num"></span>' +
       '<input class="reps" type="number" inputmode="numeric" min="0" step="1" placeholder="повторы" value="">' +
-      '<input class="weight" type="number" inputmode="decimal" min="0" step="0.5" placeholder="кг" value="">' +
       '<button type="button" class="icon-btn del" title="Удалить подход" aria-label="Удалить подход">✕</button>';
     row.querySelector('.reps').value = (reps === undefined || reps === null) ? '' : reps;
-    row.querySelector('.weight').value = (weight === undefined || weight === null) ? '' : weight;
     $('#sets').appendChild(row);
     renumberSets();
     updateTotal();
@@ -745,7 +729,6 @@
     $$('#sets .set-row').forEach(function (row, i) {
       row.querySelector('.set-num').textContent = String(i + 1);
       row.querySelector('.reps').setAttribute('aria-label', 'Повторы, подход ' + (i + 1));
-      row.querySelector('.weight').setAttribute('aria-label', 'Вес, подход ' + (i + 1) + ', кг');
     });
   }
 
@@ -756,7 +739,7 @@
       addSetRow();
       return;
     }
-    sets.forEach(function (s) { addSetRow(s.reps, s.weight); });
+    sets.forEach(function (s) { addSetRow(s.reps); });
     renumberSets();
     updateTotal();
   }
@@ -774,7 +757,6 @@
     $('#save-btn').textContent = 'Сохранить';
     $('#cancel-edit').hidden = true;
     $('#edit-banner').hidden = true;
-    $('#f-note').value = '';
     if (!keepFields) $('#f-date').value = todayISO();
     fillSets([]);
   }
@@ -784,7 +766,6 @@
     state.ui.ex = entry.ex;
     syncSegments();
     fillSets(entry.sets);
-    $('#f-note').value = entry.note || '';
     updateTotal();
   }
 
@@ -797,22 +778,9 @@
     var sets = [];
     var rows = $$('#sets .set-row');
     for (var i = 0; i < rows.length; i++) {
-      var row = rows[i];
-      var reps = Math.round(Number(row.querySelector('.reps').value));
-      var wRaw = String(row.querySelector('.weight').value).trim().replace(',', '.');
-      var weight = wRaw === '' ? null : Number(wRaw);
-      if (!reps || reps <= 0) {
-        if (weight !== null && wRaw !== '') {
-          toast('Укажите повторы в подходе ' + (i + 1), 'err');
-          return null;
-        }
-        continue;
-      }
-      if (weight !== null && (!isFinite(weight) || weight <= 0)) {
-        toast('Проверьте вес в подходе ' + (i + 1), 'err');
-        return null;
-      }
-      sets.push({ reps: reps, weight: weight });
+      var reps = Math.round(Number(rows[i].querySelector('.reps').value));
+      if (!reps || reps <= 0) continue;
+      sets.push({ reps: reps });
     }
     if (!sets.length) {
       toast('Добавьте хотя бы один подход', 'err');
@@ -821,8 +789,7 @@
     return {
       date: date,
       ex: state.ui.ex,
-      sets: sets,
-      note: $('#f-note').value.trim().slice(0, 300)
+      sets: sets
     };
   }
 
@@ -837,7 +804,6 @@
         target.date = data.date;
         target.ex = data.ex;
         target.sets = data.sets;
-        target.note = data.note;
       }
       state.ui.editId = null;
       $('#save-btn').textContent = 'Сохранить';
@@ -850,14 +816,12 @@
         createdAt: Date.now(),
         date: data.date,
         ex: data.ex,
-        sets: data.sets,
-        note: data.note
+        sets: data.sets
       });
       toast(fmtNum(entryTotal({ sets: data.sets })) + ' ' + repsWord(entryTotal({ sets: data.sets })) + ' записано');
     }
 
     save();
-    $('#f-note').value = '';
     fillSets([]);
     renderAll();
   }
@@ -892,7 +856,7 @@
     $('#cancel-edit').hidden = true;
     $('#edit-banner').hidden = true;
     $('#f-date').value = todayISO();
-    setForm({ date: todayISO(), ex: e.ex, sets: e.sets, note: e.note });
+    setForm({ date: todayISO(), ex: e.ex, sets: e.sets });
     switchTab('log');
     toast('Подходы скопированы в форму');
     var form = $('#entry-form');
@@ -907,7 +871,6 @@
       return;
     }
     fillSets(last.sets);
-    if (last.note) $('#f-note').value = last.note;
     toast('Подходы из записи ' + fmtDate(last.date));
   }
 
@@ -917,13 +880,6 @@
     var ex = EX[e.ex] || { label: e.ex, color: '#94a3b8' };
     var total = entryTotal(e);
     var setsTxt = e.sets.map(function (s) { return s.reps; }).join(' + ');
-    var weights = [];
-    e.sets.forEach(function (s) {
-      if (s.weight !== null && s.weight !== undefined && weights.indexOf(s.weight) === -1) weights.push(s.weight);
-    });
-    var wTxt = weights.length
-      ? ' · вес ' + weights.map(fmtWeight).join(' / ') + ' кг'
-      : '';
     return '<article class="entry" data-id="' + e.id + '">' +
       '<span class="dot" style="background:' + ex.color + '"></span>' +
       '<div class="entry-main">' +
@@ -931,8 +887,7 @@
           '<span class="entry-ex">' + ex.label + '</span>' +
           '<span class="entry-total num">' + fmtNum(total) + ' ' + repsWord(total) + '</span>' +
         '</div>' +
-        '<div class="entry-sets">' + setsTxt + (wTxt ? '<span class="muted">' + wTxt + '</span>' : '') + '</div>' +
-        (e.note ? '<p class="entry-note">' + escapeHtml(e.note) + '</p>' : '') +
+        '<div class="entry-sets">' + setsTxt + '</div>' +
       '</div>' +
       '<div class="entry-actions">' +
         '<button type="button" class="icon-btn" data-act="edit" title="Изменить" aria-label="Изменить запись">✎</button>' +
@@ -1300,15 +1255,13 @@
       closeMenu();
       return;
     }
-    var rows = [['Дата', 'Упражнение', 'Подходы', 'Всего повторов', 'Вес, кг', 'Заметка']];
+    var rows = [['Дата', 'Упражнение', 'Подходы', 'Всего повторов']];
     state.entries.slice().sort(compareAsc).forEach(function (e) {
       rows.push([
         e.date,
         (EX[e.ex] || {}).label || e.ex,
         e.sets.map(function (s) { return s.reps; }).join('+'),
-        entryTotal(e),
-        e.sets.map(function (s) { return s.weight === null ? '' : s.weight; }).join('/'),
-        e.note || ''
+        entryTotal(e)
       ]);
     });
     var csv = '\uFEFF' + rows.map(function (r) {
@@ -1377,7 +1330,7 @@
   function wire() {
     $('#entry-form').addEventListener('submit', onSubmit);
 
-    $('#add-set').addEventListener('click', function () { addSetRow('', '', true); });
+    $('#add-set').addEventListener('click', function () { addSetRow('', true); });
 
     $('#sets').addEventListener('click', function (ev) {
       var btn = ev.target.closest('.del');
@@ -1386,7 +1339,6 @@
       var rows = $$('#sets .set-row');
       if (rows.length <= 1) {
         row.querySelector('.reps').value = '';
-        row.querySelector('.weight').value = '';
       } else {
         row.remove();
       }

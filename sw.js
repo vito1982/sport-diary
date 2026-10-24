@@ -1,6 +1,6 @@
 /* Service worker: офлайн-кэш приложения.
    При изменении файлов приложения увеличьте CACHE, чтобы обновить кэш. */
-const CACHE = 'sport-diary-v1';
+const CACHE = 'sport-diary-v2';
 
 const ASSETS = [
   './',
