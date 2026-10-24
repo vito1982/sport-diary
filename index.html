@@ -1,0 +1,1556 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Локальный дневник тренировок: приседания, отжимания, подтягивания.">
+<title>Спорт-дневник — приседания, отжимания, подтягивания</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f2f5f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0f14" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Спорт-дневник">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f9d58'/%3E%3Crect x='14' y='38' width='8' height='14' rx='2' fill='white'/%3E%3Crect x='28' y='28' width='8' height='24' rx='2' fill='white'/%3E%3Crect x='42' y='16' width='8' height='36' rx='2' fill='white'/%3E%3C/svg%3E">
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f2f5f7;
+    --bg-glow:#e3f4ea;
+    --panel:#ffffff;
+    --panel-2:#f7f9fb;
+    --text:#0c1520;
+    --muted:#64748b;
+    --line:#e4e9ef;
+    --line-strong:#cfd8e3;
+    --accent:#0f9d58;
+    --accent-ink:#0b7a44;
+    --accent-soft:#e6f6ec;
+    --accent-contrast:#ffffff;
+    --danger:#d92d20;
+    --danger-soft:#fee4e2;
+    --shadow:0 1px 2px rgba(12,21,32,.04), 0 10px 30px -18px rgba(12,21,32,.35);
+    --r:18px;
+  }
+  [data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0a0f14;
+    --bg-glow:#0f2418;
+    --panel:#121a22;
+    --panel-2:#0e161d;
+    --text:#e9eff6;
+    --muted:#8b9bad;
+    --line:#1e2a35;
+    --line-strong:#2c3b49;
+    --accent:#3ddc84;
+    --accent-ink:#7ef0b0;
+    --accent-soft:#10301f;
+    --accent-contrast:#06210f;
+    --danger:#f97066;
+    --danger-soft:#3a1512;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 32px -20px rgba(0,0,0,.9);
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  [hidden]{display:none !important}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:15px;
+    line-height:1.45;
+    color:var(--text);
+    background:radial-gradient(900px 420px at 50% -160px,var(--bg-glow),transparent 70%),var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,p{margin:0}
+  button,input,summary{font:inherit;color:inherit}
+  .wrap{max-width:1000px;margin:0 auto;padding:22px 18px 56px;padding-top:calc(22px + env(safe-area-inset-top))}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* header */
+  .head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+  .brand h1{font-size:clamp(21px,3vw,27px);font-weight:750;letter-spacing:-.025em;line-height:1.2}
+  .sub{margin-top:3px;font-size:13px;color:var(--muted)}
+  .head-actions{display:flex;align-items:center;gap:8px;flex:none}
+  .icon-btn{
+    appearance:none;border:1px solid transparent;background:transparent;color:var(--muted);
+    width:34px;height:34px;border-radius:10px;display:inline-grid;place-items:center;
+    cursor:pointer;font-size:16px;line-height:1;padding:0;transition:background .15s,color .15s,border-color .15s;
+  }
+  .icon-btn:hover{background:var(--panel);color:var(--text);border-color:var(--line)}
+  .icon-btn.danger:hover{color:var(--danger);border-color:var(--danger)}
+
+  /* menu */
+  .menu{position:relative}
+  .menu>summary{list-style:none;cursor:pointer;user-select:none}
+  .menu>summary::-webkit-details-marker{display:none}
+  .menu[open]>summary{border-color:var(--muted)}
+  .menu-body{
+    position:absolute;right:0;top:calc(100% + 8px);z-index:40;min-width:216px;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px;
+    box-shadow:var(--shadow);
+  }
+  .menu-body button{
+    display:block;width:100%;text-align:left;background:none;border:0;padding:9px 10px;
+    border-radius:9px;cursor:pointer;font-size:14px;
+  }
+  .menu-body button:hover{background:var(--panel-2)}
+  .menu-body button.danger{color:var(--danger)}
+  .menu-body hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
+
+  /* tabs */
+  .tabs{display:flex;gap:2px;margin:18px 0 20px;border-bottom:1px solid var(--line);overflow-x:auto}
+  .tab{
+    appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+    padding:10px 14px;color:var(--muted);font-weight:650;cursor:pointer;white-space:nowrap;
+    margin-bottom:-1px;
+  }
+  .tab:hover{color:var(--text)}
+  .tab[aria-selected="true"]{color:var(--text);border-bottom-color:var(--accent)}
+
+  main{display:grid;gap:16px}
+  main>section{display:grid;gap:16px}
+
+  /* cards */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+  .card-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:14px}
+  .card-head h2{font-size:15px;font-weight:700;letter-spacing:-.01em}
+  .muted{color:var(--muted)}
+  .hint{font-size:12px;color:var(--muted);font-weight:500}
+  .stack{display:grid;gap:8px}
+
+  /* form */
+  .form-top{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px}
+  .field{display:block;min-width:0}
+  .field>span{display:block;font-size:11.5px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  input[type="date"],input[type="text"],input[type="number"]{
+    width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;
+    padding:10px 12px;font-size:16px;color:var(--text);outline:none;transition:border-color .15s,box-shadow .15s;
+  }
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .segmented{display:flex;gap:4px;padding:4px;background:var(--panel-2);border:1px solid var(--line);border-radius:13px;flex-wrap:wrap}
+  .seg{
+    appearance:none;border:0;background:none;border-radius:9px;padding:8px 12px;
+    color:var(--muted);font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+    font-size:14px;transition:background .15s,color .15s;
+  }
+  .seg:hover{color:var(--text)}
+  .seg[aria-checked="true"]{background:var(--panel);color:var(--text);box-shadow:0 1px 3px rgba(10,20,30,.12)}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+  .sets-head{display:flex;align-items:baseline;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;margin:18px 0 8px}
+  .sets-head>span:first-child{font-size:11.5px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .sets{display:grid;gap:8px}
+  .set-row{display:grid;grid-template-columns:24px minmax(0,1fr) 90px 32px;align-items:center;gap:8px}
+  .set-num{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+  .set-row .icon-btn{width:32px;height:32px;font-size:13px}
+  .note-field{margin-top:16px}
+  .form-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .spacer{flex:1 1 auto}
+  .form-total{font-weight:700;color:var(--muted);font-size:14px;white-space:nowrap}
+  .edit-banner{
+    display:flex;align-items:center;gap:8px;margin:-4px 0 14px;padding:8px 12px;border-radius:10px;
+    background:var(--accent-soft);color:var(--accent-ink);font-size:13px;font-weight:600;
+  }
+
+  /* buttons */
+  .btn{
+    appearance:none;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--line-strong);background:var(--panel);color:var(--text);
+    border-radius:11px;padding:9px 15px;font-weight:650;font-size:14px;cursor:pointer;
+    transition:border-color .15s,background .15s,filter .15s;
+  }
+  .btn:hover{border-color:var(--muted)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.ghost{background:transparent;border-color:var(--line)}
+  .btn.ghost:hover{background:var(--panel-2);border-color:var(--line-strong)}
+  .link{appearance:none;border:0;background:none;padding:0;color:var(--accent-ink);font-size:13px;font-weight:650;cursor:pointer}
+  .link:hover{text-decoration:underline}
+
+  /* entries */
+  .entry{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+  .entry>.dot{margin-top:7px}
+  .entry-main{flex:1 1 auto;min-width:0}
+  .entry-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+  .entry-ex{font-weight:650}
+  .entry-total{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .entry-sets{margin-top:2px;font-size:13.5px;color:var(--muted);word-break:break-word}
+  .entry-sets .muted{color:var(--muted);opacity:.85}
+  .entry-note{margin-top:5px;font-size:13px;color:var(--muted);font-style:italic;word-break:break-word}
+  .entry-actions{display:flex;gap:2px;flex:none}
+
+  .day{display:grid;gap:8px;margin-bottom:18px}
+  .day:last-child{margin-bottom:0}
+  .day-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--muted);font-weight:600;padding:0 2px}
+  .journal{display:block}
+  .journal-meta{font-size:13px;color:var(--muted);margin:-4px 0 2px}
+  .journal-meta strong{color:var(--text)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{
+    appearance:none;display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    border-radius:999px;padding:7px 13px;font-size:13.5px;font-weight:600;cursor:pointer;
+  }
+  .chip:hover{color:var(--text)}
+  .chip.active{background:var(--text);border-color:var(--text);color:var(--panel)}
+
+  .empty{
+    padding:26px 18px;text-align:center;color:var(--muted);font-size:14px;
+    border:1px dashed var(--line-strong);border-radius:var(--r);display:grid;gap:4px;
+  }
+  .empty-chart{padding:34px 12px;text-align:center;color:var(--muted);font-size:14px;border:1px dashed var(--line-strong);border-radius:14px}
+
+  /* progress */
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:grid;gap:3px;align-content:start}
+  .kpi-label{font-size:11.5px;font-weight:650;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .kpi-value{font-size:27px;font-weight:750;letter-spacing:-.03em;line-height:1.15}
+  .kpi-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .delta{font-size:11.5px;font-weight:750;padding:1px 7px;border-radius:999px}
+  .delta.up{background:var(--accent-soft);color:var(--accent-ink)}
+  .delta.down{background:var(--danger-soft);color:var(--danger)}
+  .chart{width:100%;height:auto;display:block;overflow:visible}
+  .chart .grid{stroke:var(--line);stroke-width:1}
+  .chart .tick{fill:var(--muted);font-size:11px}
+  .chart .val{fill:var(--text);font-size:12px;font-weight:700}
+  .chart .point{stroke:var(--panel);stroke-width:2}
+  .chart .bar{transition:opacity .15s}
+  .chart .bar:hover{opacity:.75}
+  .records{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .record{border:1px solid var(--line);border-radius:14px;padding:13px 14px;display:grid;gap:2px;background:var(--panel-2)}
+  .record-head{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:650;color:var(--muted)}
+  .record-val{font-size:24px;font-weight:750;letter-spacing:-.02em}
+  .record-meta{font-size:12px;color:var(--muted)}
+  .record-total{margin-top:6px;padding-top:6px;border-top:1px solid var(--line);font-size:13px;font-weight:650}
+
+  .foot{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+  #toast{
+    position:fixed;left:50%;bottom:24px;z-index:60;max-width:calc(100vw - 32px);
+    transform:translate(-50%,16px);opacity:0;pointer-events:none;
+    background:var(--text);color:var(--panel);padding:10px 18px;border-radius:999px;
+    font-size:14px;font-weight:650;text-align:center;box-shadow:var(--shadow);
+    transition:opacity .18s,transform .18s;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+  #toast[data-kind="err"]{background:var(--danger);color:#fff}
+
+  /* установка на телефон */
+  .install{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--accent);border-radius:var(--r);background:var(--accent-soft)}
+  .install-copy{flex:1 1 auto;min-width:0;display:grid;gap:1px}
+  .install-copy strong{font-size:14px}
+  .install-copy span{font-size:12.5px;color:var(--muted)}
+  .install .btn{padding:8px 14px;flex:none}
+  .install .icon-btn{flex:none;color:var(--muted)}
+  .modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:18px;background:rgba(6,12,18,.55)}
+  .modal-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 24px 60px -24px rgba(0,0,0,.55)}
+  .modal-card h2{font-size:17px;margin-bottom:12px}
+  .install-steps{margin:0 0 18px;padding-left:20px;display:grid;gap:7px;font-size:14px;color:var(--muted)}
+  .install-steps li::marker{color:var(--accent);font-weight:700}
+  .modal-card .btn{width:100%;justify-content:center}
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  @media (max-width:760px){
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .records{grid-template-columns:1fr}
+  }
+  @media (max-width:620px){
+    .wrap{padding:16px 12px 44px;padding-top:calc(16px + env(safe-area-inset-top))}
+    .form-top{grid-template-columns:1fr;gap:12px}
+    .card{padding:15px}
+    .set-row{grid-template-columns:20px minmax(0,1fr) 78px 32px;gap:6px}
+    .form-actions{gap:8px;margin-top:14px}
+    .form-actions .spacer{display:none}
+    #add-set,#copy-last{flex:1 1 auto;justify-content:center}
+    .form-total{order:1;margin-right:auto;font-size:13px}
+    #save-btn{order:2;flex:1 1 42%;justify-content:center}
+    #cancel-edit{order:3;flex:1 1 100%;justify-content:center}
+    .segmented{gap:3px;padding:3px}
+    .seg{padding:7px 8px;font-size:13px;gap:5px}
+    #f-ex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+    #f-ex .seg{justify-content:center;padding:9px 4px;font-size:12.5px;gap:4px}
+    #f-ex .seg .dot{width:6px;height:6px}
+    .kpi-value{font-size:24px}
+    .entry{padding:11px 12px}
+    .entry-actions .icon-btn{width:30px;height:30px}
+  }
+  @media (max-width:480px){
+    .sub{display:none}
+    .brand h1{font-size:21px}
+  }
+  @media (max-width:349px){
+    #f-ex{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="brand">
+      <h1>Спорт-дневник</h1>
+      <p class="sub">Приседания · отжимания · подтягивания</p>
+    </div>
+    <div class="head-actions">
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Переключить тему">☾</button>
+      <details class="menu" id="data-menu">
+        <summary class="btn ghost">Данные</summary>
+        <div class="menu-body">
+          <button type="button" data-action="install">Установить на телефон</button>
+          <hr>
+          <button type="button" data-action="export-json">Экспорт в JSON</button>
+          <button type="button" data-action="export-csv">Экспорт в CSV</button>
+          <button type="button" data-action="import">Импорт из JSON</button>
+          <hr>
+          <button type="button" data-action="system-theme">Системная тема</button>
+          <button type="button" data-action="clear" class="danger">Удалить все записи</button>
+        </div>
+      </details>
+      <input type="file" id="import-file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Разделы">
+    <button class="tab" type="button" role="tab" id="tab-log" data-tab="log" aria-selected="true" aria-controls="view-log">Запись</button>
+    <button class="tab" type="button" role="tab" id="tab-journal" data-tab="journal" aria-selected="false" aria-controls="view-journal" tabindex="-1">Журнал</button>
+    <button class="tab" type="button" role="tab" id="tab-progress" data-tab="progress" aria-selected="false" aria-controls="view-progress" tabindex="-1">Прогресс</button>
+  </nav>
+
+  <main>
+    <section id="view-log" role="tabpanel" aria-labelledby="tab-log">
+      <div id="install-banner" class="install" hidden>
+        <div class="install-copy">
+          <strong>Установить на телефон</strong>
+          <span>Открывается с иконки и работает без интернета.</span>
+        </div>
+        <button type="button" id="install-btn" class="btn primary">Установить</button>
+        <button type="button" id="install-dismiss" class="icon-btn" aria-label="Скрыть предложение">✕</button>
+      </div>
+      <form id="entry-form" class="card" autocomplete="off" novalidate>
+        <div id="edit-banner" class="edit-banner" hidden>Редактирование записи <span id="edit-date"></span></div>
+        <div class="form-top">
+          <label class="field">
+            <span>Дата</span>
+            <input type="date" id="f-date" required>
+          </label>
+          <div class="field">
+            <span>Упражнение</span>
+            <div class="segmented" id="f-ex" role="radiogroup" aria-label="Упражнение"></div>
+          </div>
+        </div>
+
+        <div class="sets-head">
+          <span>Подходы</span>
+          <span class="hint">повторы · вес, кг — по желанию</span>
+        </div>
+        <div id="sets" class="sets"></div>
+
+        <label class="field note-field">
+          <span>Заметка</span>
+          <input type="text" id="f-note" maxlength="300" placeholder="техника, самочувствие, пульс…">
+        </label>
+
+        <div class="form-actions">
+          <button type="button" id="add-set" class="btn ghost">+ подход</button>
+          <button type="button" id="copy-last" class="btn ghost">Как в прошлый раз</button>
+          <span class="spacer"></span>
+          <span id="form-total" class="form-total num">0 повторов</span>
+          <button type="submit" id="save-btn" class="btn primary">Сохранить</button>
+          <button type="button" id="cancel-edit" class="btn ghost" hidden>Отмена</button>
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Последние записи</h2>
+          <button class="link" type="button" data-goto="journal">Весь журнал →</button>
+        </div>
+        <div id="recent-list" class="stack"></div>
+      </div>
+    </section>
+
+    <section id="view-journal" role="tabpanel" aria-labelledby="tab-journal" hidden>
+      <div class="filters" id="journal-filters"></div>
+      <p class="journal-meta" id="journal-summary"></p>
+      <div id="journal-list" class="journal"></div>
+    </section>
+
+    <section id="view-progress" role="tabpanel" aria-labelledby="tab-progress" hidden>
+      <div class="segmented" id="progress-ex" role="radiogroup" aria-label="Упражнение"></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Лучший подход по датам</h2>
+          <span class="muted" style="font-size:12px">за день</span>
+        </div>
+        <div id="chart-best"></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Объём по неделям</h2>
+          <span class="muted" style="font-size:12px">последние 12 недель</span>
+        </div>
+        <div id="chart-volume"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Личные рекорды</h2></div>
+        <div class="records" id="records"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Данные хранятся только в этом браузере и никуда не отправляются. Для резервной копии используйте «Данные → Экспорт в JSON».
+  </footer>
+</div>
+
+<div id="install-modal" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="install-modal-title">
+    <h2 id="install-modal-title">Установка на телефон</h2>
+    <ol id="install-steps" class="install-steps"></ol>
+    <button type="button" id="install-modal-close" class="btn primary">Понятно</button>
+  </div>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+(function () {
+
+  var STORE_KEY = 'sport-diary.v1';
+  var THEME_KEY = 'sport-diary.theme';
+
+  var EXERCISES = [
+    { id: 'squats',  label: 'Приседания',   color: '#f59e0b' },
+    { id: 'pushups', label: 'Отжимания',    color: '#3b82f6' },
+    { id: 'pullups', label: 'Подтягивания', color: '#8b5cf6' }
+  ];
+  var EX = {};
+  EXERCISES.forEach(function (x) { EX[x.id] = x; });
+
+  var state = {
+    entries: [],
+    theme: null,
+    ui: { tab: 'log', ex: 'squats', filter: 'all', progressEx: 'squats', editId: null }
+  };
+
+  /* ---------------- utils ---------------- */
+
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+
+  function uid() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+  function pad2(n) { return String(n).padStart(2, '0'); }
+  function isoOf(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function todayISO() { return isoOf(new Date()); }
+  function parseISO(s) {
+    var p = String(s).split('-').map(Number);
+    return new Date(p[0], (p[1] || 1) - 1, p[2] || 1);
+  }
+  function weekStart(date) {
+    var d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return d;
+  }
+
+  var numFmt = new Intl.NumberFormat('ru-RU');
+  function fmtNum(n) { return numFmt.format(n); }
+  function fmtAxis(v) {
+    var r = Math.round(v * 10) / 10;
+    return Number.isInteger(r) ? fmtNum(r) : String(r).replace('.', ',');
+  }
+  function fmtWeight(w) {
+    return Number.isInteger(w) ? String(w) : String(w).replace('.', ',');
+  }
+  function plural(n, one, few, many) {
+    var a = Math.abs(n) % 100, b = a % 10;
+    if (a > 10 && a < 20) return many;
+    if (b > 1 && b < 5) return few;
+    if (b === 1) return one;
+    return many;
+  }
+  function repsWord(n) { return plural(n, 'повтор', 'повтора', 'повторов'); }
+  function trainWord(n) { return plural(n, 'тренировка', 'тренировки', 'тренировок'); }
+
+  var MONTHS = ['янв', 'февр', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сент', 'окт', 'нояб', 'дек'];
+  function fmtDate(iso) {
+    var d = parseISO(iso);
+    return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+  }
+  function fmtDateShort(iso) {
+    var d = parseISO(iso);
+    return pad2(d.getDate()) + '.' + pad2(d.getMonth() + 1);
+  }
+  function fmtWeekday(iso) {
+    return ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'][parseISO(iso).getDay()];
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      if (c === '&') return '&amp;';
+      if (c === '<') return '&lt;';
+      if (c === '>') return '&gt;';
+      if (c === '"') return '&quot;';
+      return '&#39;';
+    });
+  }
+
+  function entryTotal(e) {
+    return (e.sets || []).reduce(function (sum, s) { return sum + (Number(s.reps) || 0); }, 0);
+  }
+  function entryMax(e) {
+    return (e.sets || []).reduce(function (m, s) { return Math.max(m, Number(s.reps) || 0); }, 0);
+  }
+  function compareAsc(a, b) {
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  }
+  function exEntries(exId) {
+    return state.entries.filter(function (e) { return e.ex === exId; }).sort(compareAsc);
+  }
+
+  /* ---------------- storage ---------------- */
+
+  function normalizeEntry(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+    var date = (typeof raw.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.date)) ? raw.date : null;
+    if (!date) return null;
+    if (!raw.ex || !EX[raw.ex]) return null;
+    if (!Array.isArray(raw.sets)) return null;
+
+    var sets = [];
+    raw.sets.forEach(function (s) {
+      if (!s || typeof s !== 'object') return;
+      var reps = Math.round(Number(s.reps));
+      if (!isFinite(reps) || reps <= 0) return;
+      var weight = (s.weight === null || s.weight === undefined || s.weight === '') ? null : Number(s.weight);
+      if (weight !== null && (!isFinite(weight) || weight <= 0)) weight = null;
+      sets.push({ reps: reps, weight: weight });
+    });
+    if (!sets.length) return null;
+
+    return {
+      id: (typeof raw.id === 'string' && raw.id) ? raw.id : uid(),
+      date: date,
+      ex: raw.ex,
+      sets: sets,
+      note: typeof raw.note === 'string' ? raw.note.slice(0, 300) : '',
+      createdAt: isFinite(Number(raw.createdAt)) ? Number(raw.createdAt) : Date.now()
+    };
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        if (data && Array.isArray(data.entries)) {
+          state.entries = data.entries.map(normalizeEntry).filter(Boolean);
+        }
+      }
+    } catch (err) {
+      console.warn('Не удалось прочитать сохранённые данные', err);
+    }
+    try {
+      var t = localStorage.getItem(THEME_KEY);
+      if (t === 'light' || t === 'dark') state.theme = t;
+    } catch (err) { /* ignore */ }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ version: 1, entries: state.entries }));
+      requestPersist();
+      return true;
+    } catch (err) {
+      toast('Не удалось сохранить: хранилище браузера недоступно', 'err');
+      return false;
+    }
+  }
+
+  /* ---------------- theme ---------------- */
+
+  var mqDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+  function resolvedTheme() {
+    if (state.theme) return state.theme;
+    return (mqDark && mqDark.matches) ? 'dark' : 'light';
+  }
+  function applyTheme() {
+    var t = resolvedTheme();
+    document.documentElement.dataset.theme = t;
+    var btn = $('#theme-toggle');
+    if (!btn) return;
+    btn.textContent = t === 'dark' ? '☀' : '☾';
+    btn.setAttribute('aria-label', t === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему');
+    btn.title = btn.getAttribute('aria-label');
+  }
+
+  /* ---------------- установка на телефон ---------------- */
+
+  var deferredPrompt = null;
+  var persistAsked = false;
+
+  function isStandalone() {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator.standalone === true;
+  }
+
+  function installDismissed() {
+    try { return localStorage.getItem('sport-diary.install-dismissed') === '1'; } catch (err) { return false; }
+  }
+
+  function showInstallBanner() {
+    if (!deferredPrompt || isStandalone() || installDismissed()) return;
+    $('#install-banner').hidden = false;
+  }
+
+  function hideInstallBanner() {
+    $('#install-banner').hidden = true;
+  }
+
+  function requestPersist() {
+    if (persistAsked) return;
+    persistAsked = true;
+    if (navigator.storage && navigator.storage.persist) {
+      try { navigator.storage.persist().catch(function () {}); } catch (err) { /* ignore */ }
+    }
+  }
+
+  function installSteps() {
+    var ua = navigator.userAgent || '';
+    var ios = /iPad|iPhone|iPod/.test(ua) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isStandalone()) {
+      return ['Приложение уже установлено — открывайте его с иконки на главном экране.'];
+    }
+    if (ios) {
+      return [
+        'Откройте эту страницу в Safari.',
+        'Нажмите «Поделиться» — квадрат со стрелкой вверх.',
+        'Выберите «На экран „Домой“».',
+        'Нажмите «Добавить» — иконка появится на главном экране.'
+      ];
+    }
+    if (/Android/i.test(ua)) {
+      return [
+        'Откройте эту страницу в Chrome.',
+        'Нажмите ⋮ в правом верхнем углу.',
+        'Выберите «Установить приложение» или «Добавить на главный экран».',
+        'Подтвердите установку.'
+      ];
+    }
+    return [
+      'Откройте эту страницу в браузере на телефоне.',
+      'В меню браузера выберите «Установить приложение» или «Добавить на главный экран».'
+    ];
+  }
+
+  function showInstallHelp() {
+    var steps = installSteps();
+    $('#install-steps').innerHTML = steps.map(function (s) {
+      return '<li>' + escapeHtml(s) + '</li>';
+    }).join('');
+    $('#install-modal').hidden = false;
+  }
+
+  function installNow() {
+    if (deferredPrompt) {
+      var prompt = deferredPrompt;
+      deferredPrompt = null;
+      hideInstallBanner();
+      if (prompt.prompt) prompt.prompt();
+      if (prompt.userChoice) prompt.userChoice.catch(function () {});
+      return;
+    }
+    showInstallHelp();
+  }
+
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    if (!/^https?:$/.test(location.protocol)) return;
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function (err) {
+        console.warn('Service worker не зарегистрирован', err);
+      });
+    });
+  }
+
+  /* ---------------- toast ---------------- */
+
+  var toastTimer = null;
+  function toast(msg, kind) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.dataset.kind = kind || 'ok';
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2800);
+  }
+
+  /* ---------------- form ---------------- */
+
+  function exSegHtml() {
+    return EXERCISES.map(function (ex) {
+      return '<button type="button" class="seg" role="radio" aria-checked="false" data-ex="' + ex.id + '">' +
+        '<span class="dot" style="background:' + ex.color + '"></span>' + ex.label + '</button>';
+    }).join('');
+  }
+
+  function buildStaticUI() {
+    $('#f-ex').innerHTML = exSegHtml();
+    $('#progress-ex').innerHTML = exSegHtml();
+    $('#journal-filters').innerHTML =
+      '<button type="button" class="chip active" data-filter="all">Все</button>' +
+      EXERCISES.map(function (ex) {
+        return '<button type="button" class="chip" data-filter="' + ex.id + '">' +
+          '<span class="dot" style="background:' + ex.color + '"></span>' + ex.label + '</button>';
+      }).join('');
+  }
+
+  function syncSegments() {
+    $$('#f-ex .seg').forEach(function (b) {
+      b.setAttribute('aria-checked', String(b.dataset.ex === state.ui.ex));
+    });
+    $$('#progress-ex .seg').forEach(function (b) {
+      b.setAttribute('aria-checked', String(b.dataset.ex === state.ui.progressEx));
+    });
+    $$('#journal-filters .chip').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.filter === state.ui.filter);
+    });
+  }
+
+  function addSetRow(reps, weight, focus) {
+    var row = document.createElement('div');
+    row.className = 'set-row';
+    row.innerHTML =
+      '<span class="set-num"></span>' +
+      '<input class="reps" type="number" inputmode="numeric" min="0" step="1" placeholder="повторы" value="">' +
+      '<input class="weight" type="number" inputmode="decimal" min="0" step="0.5" placeholder="кг" value="">' +
+      '<button type="button" class="icon-btn del" title="Удалить подход" aria-label="Удалить подход">✕</button>';
+    row.querySelector('.reps').value = (reps === undefined || reps === null) ? '' : reps;
+    row.querySelector('.weight').value = (weight === undefined || weight === null) ? '' : weight;
+    $('#sets').appendChild(row);
+    renumberSets();
+    updateTotal();
+    if (focus) row.querySelector('.reps').focus();
+  }
+
+  function renumberSets() {
+    $$('#sets .set-row').forEach(function (row, i) {
+      row.querySelector('.set-num').textContent = String(i + 1);
+      row.querySelector('.reps').setAttribute('aria-label', 'Повторы, подход ' + (i + 1));
+      row.querySelector('.weight').setAttribute('aria-label', 'Вес, подход ' + (i + 1) + ', кг');
+    });
+  }
+
+  function fillSets(sets) {
+    var box = $('#sets');
+    box.innerHTML = '';
+    if (!sets || !sets.length) {
+      addSetRow();
+      return;
+    }
+    sets.forEach(function (s) { addSetRow(s.reps, s.weight); });
+    renumberSets();
+    updateTotal();
+  }
+
+  function updateTotal() {
+    var total = $$('#sets .reps').reduce(function (sum, el) {
+      var v = Math.round(Number(el.value));
+      return sum + (isFinite(v) && v > 0 ? v : 0);
+    }, 0);
+    $('#form-total').textContent = fmtNum(total) + ' ' + repsWord(total);
+  }
+
+  function resetForm(keepFields) {
+    state.ui.editId = null;
+    $('#save-btn').textContent = 'Сохранить';
+    $('#cancel-edit').hidden = true;
+    $('#edit-banner').hidden = true;
+    $('#f-note').value = '';
+    if (!keepFields) $('#f-date').value = todayISO();
+    fillSets([]);
+  }
+
+  function setForm(entry) {
+    $('#f-date').value = entry.date;
+    state.ui.ex = entry.ex;
+    syncSegments();
+    fillSets(entry.sets);
+    $('#f-note').value = entry.note || '';
+    updateTotal();
+  }
+
+  function readForm() {
+    var date = $('#f-date').value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      toast('Укажите дату', 'err');
+      return null;
+    }
+    var sets = [];
+    var rows = $$('#sets .set-row');
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var reps = Math.round(Number(row.querySelector('.reps').value));
+      var wRaw = String(row.querySelector('.weight').value).trim().replace(',', '.');
+      var weight = wRaw === '' ? null : Number(wRaw);
+      if (!reps || reps <= 0) {
+        if (weight !== null && wRaw !== '') {
+          toast('Укажите повторы в подходе ' + (i + 1), 'err');
+          return null;
+        }
+        continue;
+      }
+      if (weight !== null && (!isFinite(weight) || weight <= 0)) {
+        toast('Проверьте вес в подходе ' + (i + 1), 'err');
+        return null;
+      }
+      sets.push({ reps: reps, weight: weight });
+    }
+    if (!sets.length) {
+      toast('Добавьте хотя бы один подход', 'err');
+      return null;
+    }
+    return {
+      date: date,
+      ex: state.ui.ex,
+      sets: sets,
+      note: $('#f-note').value.trim().slice(0, 300)
+    };
+  }
+
+  function onSubmit(ev) {
+    ev.preventDefault();
+    var data = readForm();
+    if (!data) return;
+
+    if (state.ui.editId) {
+      var target = state.entries.find(function (e) { return e.id === state.ui.editId; });
+      if (target) {
+        target.date = data.date;
+        target.ex = data.ex;
+        target.sets = data.sets;
+        target.note = data.note;
+      }
+      state.ui.editId = null;
+      $('#save-btn').textContent = 'Сохранить';
+      $('#cancel-edit').hidden = true;
+      $('#edit-banner').hidden = true;
+      toast('Изменения сохранены');
+    } else {
+      state.entries.push({
+        id: uid(),
+        createdAt: Date.now(),
+        date: data.date,
+        ex: data.ex,
+        sets: data.sets,
+        note: data.note
+      });
+      toast(fmtNum(entryTotal({ sets: data.sets })) + ' ' + repsWord(entryTotal({ sets: data.sets })) + ' записано');
+    }
+
+    save();
+    $('#f-note').value = '';
+    fillSets([]);
+    renderAll();
+  }
+
+  function startEdit(id) {
+    var e = state.entries.find(function (x) { return x.id === id; });
+    if (!e) return;
+    state.ui.editId = id;
+    setForm(e);
+    $('#save-btn').textContent = 'Сохранить изменения';
+    $('#cancel-edit').hidden = false;
+    $('#edit-banner').hidden = false;
+    $('#edit-date').textContent = 'от ' + fmtDate(e.date) + ' · ' + EX[e.ex].label;
+    switchTab('log');
+    var form = $('#entry-form');
+    if (form.scrollIntoView) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var firstReps = $('#sets .reps');
+    if (firstReps) firstReps.focus();
+  }
+
+  function cancelEdit() {
+    resetForm(true);
+    renderAll();
+    toast('Редактирование отменено');
+  }
+
+  function duplicateEntry(id) {
+    var e = state.entries.find(function (x) { return x.id === id; });
+    if (!e) return;
+    state.ui.editId = null;
+    $('#save-btn').textContent = 'Сохранить';
+    $('#cancel-edit').hidden = true;
+    $('#edit-banner').hidden = true;
+    $('#f-date').value = todayISO();
+    setForm({ date: todayISO(), ex: e.ex, sets: e.sets, note: e.note });
+    switchTab('log');
+    toast('Подходы скопированы в форму');
+    var form = $('#entry-form');
+    if (form.scrollIntoView) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyLast() {
+    var list = exEntries(state.ui.ex);
+    var last = list.length ? list[list.length - 1] : null;
+    if (!last) {
+      toast('Нет прошлых записей по этому упражнению', 'err');
+      return;
+    }
+    fillSets(last.sets);
+    if (last.note) $('#f-note').value = last.note;
+    toast('Подходы из записи ' + fmtDate(last.date));
+  }
+
+  /* ---------------- rendering ---------------- */
+
+  function entryHtml(e) {
+    var ex = EX[e.ex] || { label: e.ex, color: '#94a3b8' };
+    var total = entryTotal(e);
+    var setsTxt = e.sets.map(function (s) { return s.reps; }).join(' + ');
+    var weights = [];
+    e.sets.forEach(function (s) {
+      if (s.weight !== null && s.weight !== undefined && weights.indexOf(s.weight) === -1) weights.push(s.weight);
+    });
+    var wTxt = weights.length
+      ? ' · вес ' + weights.map(fmtWeight).join(' / ') + ' кг'
+      : '';
+    return '<article class="entry" data-id="' + e.id + '">' +
+      '<span class="dot" style="background:' + ex.color + '"></span>' +
+      '<div class="entry-main">' +
+        '<div class="entry-top">' +
+          '<span class="entry-ex">' + ex.label + '</span>' +
+          '<span class="entry-total num">' + fmtNum(total) + ' ' + repsWord(total) + '</span>' +
+        '</div>' +
+        '<div class="entry-sets">' + setsTxt + (wTxt ? '<span class="muted">' + wTxt + '</span>' : '') + '</div>' +
+        (e.note ? '<p class="entry-note">' + escapeHtml(e.note) + '</p>' : '') +
+      '</div>' +
+      '<div class="entry-actions">' +
+        '<button type="button" class="icon-btn" data-act="edit" title="Изменить" aria-label="Изменить запись">✎</button>' +
+        '<button type="button" class="icon-btn" data-act="dup" title="Повторить" aria-label="Повторить запись">⧉</button>' +
+        '<button type="button" class="icon-btn danger" data-act="del" title="Удалить" aria-label="Удалить запись">✕</button>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderRecent() {
+    var box = $('#recent-list');
+    var items = state.entries.slice().sort(function (a, b) {
+      if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    }).slice(0, 4);
+
+    if (!items.length) {
+      box.innerHTML = '<div class="empty">Пока пусто — заполните форму выше.<br>Записи сохраняются сразу и останутся в браузере.</div>';
+      return;
+    }
+    box.innerHTML = items.map(entryHtml).join('');
+  }
+
+  function renderJournal() {
+    var box = $('#journal-list');
+    var filter = state.ui.filter;
+    var items = state.entries.filter(function (e) { return filter === 'all' || e.ex === filter; })
+      .sort(function (a, b) {
+        if (a.date !== b.date) return a.date < b.date ? 1 : -1;
+        return (b.createdAt || 0) - (a.createdAt || 0);
+      });
+
+    var totalReps = items.reduce(function (s, e) { return s + entryTotal(e); }, 0);
+    var summary = $('#journal-summary');
+    if (!items.length) {
+      summary.textContent = '';
+      box.innerHTML = '<div class="empty">Здесь появятся ваши тренировки.<br>Добавьте первую запись на вкладке «Запись».</div>';
+      return;
+    }
+    summary.innerHTML = '<strong>' + fmtNum(items.length) + '</strong> ' + trainWord(items.length) +
+      ' · <strong>' + fmtNum(totalReps) + '</strong> ' + repsWord(totalReps);
+
+    var html = '';
+    var currentDate = null;
+    items.forEach(function (e) {
+      if (e.date !== currentDate) {
+        if (currentDate !== null) html += '</div>';
+        html += '<div class="day"><div class="day-head"><span>' + fmtDate(e.date) + '</span><span>' + fmtWeekday(e.date) + '</span></div>';
+        currentDate = e.date;
+      }
+      html += entryHtml(e);
+    });
+    html += '</div>';
+    box.innerHTML = html;
+  }
+
+  /* ---------------- charts ---------------- */
+
+  var chartSeq = 0;
+
+  function niceStep(range, count) {
+    var raw = Math.max(1, range) / count;
+    var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var norm = raw / mag;
+    var mult = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+    return Math.max(1, mult * mag);
+  }
+
+  function svgLine(points, color, width) {
+    var W = Math.max(300, Math.min(760, Math.round(width) || 760));
+    var compact = W < 480;
+    var H = compact ? 210 : 250;
+    var P = compact ? { l: 34, r: 12, t: 22, b: 28 } : { l: 46, r: 18, t: 24, b: 34 };
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    var values = points.map(function (p) { return p.value; });
+    var maxV = Math.max.apply(null, values);
+    var minV = Math.min.apply(null, values);
+    var span = Math.max(1, maxV - minV);
+    var step = niceStep(span, 4);
+    var lo = Math.max(0, Math.floor((minV - span * 0.25) / step) * step);
+    var hi = Math.ceil((maxV + span * 0.2) / step) * step;
+    if (hi <= lo) hi = lo + step * 4;
+
+    var n = points.length;
+    function X(i) { return n === 1 ? P.l + iw / 2 : P.l + (iw * i) / (n - 1); }
+    function Y(v) { return P.t + ih - ((v - lo) / (hi - lo)) * ih; }
+
+    var gid = 'grad' + (++chartSeq);
+    var grid = '';
+    for (var v = lo; v <= hi + 1e-6; v += step) {
+      var gy = Y(v).toFixed(1);
+      grid += '<line class="grid" x1="' + P.l + '" y1="' + gy + '" x2="' + (W - P.r) + '" y2="' + gy + '"/>';
+      grid += '<text class="tick" x="' + (P.l - 10) + '" y="' + (Number(gy) + 4).toFixed(1) + '" text-anchor="end">' + fmtAxis(v) + '</text>';
+    }
+
+    var pts = points.map(function (p, i) { return [X(i), Y(p.value)]; });
+    var line = pts.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+    var area = line + ' L' + X(n - 1).toFixed(1) + ',' + (P.t + ih) + ' L' + X(0).toFixed(1) + ',' + (P.t + ih) + ' Z';
+
+    var dots = '';
+    if (n <= 45) {
+      dots = pts.map(function (p) {
+        return '<circle class="point" cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (compact ? 3 : 3.6) + '" fill="' + color + '"/>';
+      }).join('');
+    }
+
+    var idxs = [];
+    var ticks;
+    if (n <= 6) {
+      ticks = points.map(function (_, i) { return i; });
+    } else if (compact) {
+      ticks = [0, Math.round((n - 1) / 3), Math.round(((n - 1) * 2) / 3), n - 1];
+    } else {
+      ticks = [0, Math.round((n - 1) * 0.25), Math.round((n - 1) * 0.5), Math.round((n - 1) * 0.75), n - 1];
+    }
+    ticks.forEach(function (i) {
+      if (idxs.indexOf(i) === -1) idxs.push(i);
+    });
+    var xlabels = idxs.map(function (i) {
+      return '<text class="tick" x="' + X(i).toFixed(1) + '" y="' + (H - 10) + '" text-anchor="middle">' + fmtDateShort(points[i].label) + '</text>';
+    }).join('');
+
+    var last = pts[n - 1];
+    var lastValY = Math.max(14, last[1] - 12);
+    var lastLabel = '<text class="val" x="' + last[0].toFixed(1) + '" y="' + lastValY + '" text-anchor="middle">' +
+      fmtNum(points[n - 1].value) + '</text>';
+
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="График лучшего подхода по датам">' +
+      '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1">' +
+        '<stop offset="0" stop-color="' + color + '" stop-opacity=".26"/>' +
+        '<stop offset="1" stop-color="' + color + '" stop-opacity="0"/>' +
+      '</linearGradient></defs>' +
+      grid +
+      '<path d="' + area + '" fill="url(#' + gid + ')"/>' +
+      '<path d="' + line + '" fill="none" stroke="' + color + '" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+      dots + xlabels + lastLabel +
+    '</svg>';
+  }
+
+  function svgBars(bars, color, width) {
+    var W = Math.max(300, Math.min(760, Math.round(width) || 760));
+    var compact = W < 480;
+    var H = compact ? 200 : 230;
+    var P = compact ? { l: 34, r: 10, t: 18, b: 30 } : { l: 46, r: 18, t: 20, b: 36 };
+    var iw = W - P.l - P.r, ih = H - P.t - P.b;
+    var max = Math.max.apply(null, bars.map(function (b) { return b.total; }).concat([1]));
+    var step = niceStep(max, 4);
+    var hi = Math.ceil(max / step) * step;
+    if (hi <= 0) hi = step * 4;
+
+    var grid = '';
+    for (var v = 0; v <= hi + 1e-6; v += step) {
+      var gy = (P.t + ih - (v / hi) * ih).toFixed(1);
+      grid += '<line class="grid" x1="' + P.l + '" y1="' + gy + '" x2="' + (W - P.r) + '" y2="' + gy + '"/>';
+      grid += '<text class="tick" x="' + (P.l - 10) + '" y="' + (Number(gy) + 4).toFixed(1) + '" text-anchor="end">' + fmtAxis(v) + '</text>';
+    }
+
+    var slot = iw / bars.length;
+    var bw = Math.max(compact ? 5 : 6, slot * 0.58);
+    var labelEvery = compact ? 3 : 2;
+    var rects = '';
+    var labels = '';
+    var maxIdx = 0;
+    bars.forEach(function (b, i) {
+      if (b.total > bars[maxIdx].total) maxIdx = i;
+      var h = (b.total / hi) * ih;
+      var x = P.l + slot * (i + 0.5) - bw / 2;
+      var y = P.t + ih - h;
+      var cx = P.l + slot * (i + 0.5);
+      if (b.total > 0) {
+        rects += '<rect class="bar" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + bw.toFixed(1) +
+          '" height="' + Math.max(2, h).toFixed(1) + '" rx="3" fill="' + color + '">' +
+          '<title>' + fmtDateShort(b.label) + ': ' + fmtNum(b.total) + '</title></rect>';
+      }
+      if (i % labelEvery === 0 || i === bars.length - 1) {
+        labels += '<text class="tick" x="' + cx.toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' +
+          fmtDateShort(b.label) + '</text>';
+      }
+    });
+
+    var peak = '';
+    if (bars[maxIdx].total > 0) {
+      var px = P.l + slot * (maxIdx + 0.5);
+      var py = P.t + ih - (bars[maxIdx].total / hi) * ih - 8;
+      peak = '<text class="val" x="' + px.toFixed(1) + '" y="' + Math.max(13, py).toFixed(1) + '" text-anchor="middle">' +
+        fmtNum(bars[maxIdx].total) + '</text>';
+    }
+
+    return '<svg class="chart" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Объём по неделям">' +
+      grid + rects + labels + peak +
+    '</svg>';
+  }
+
+  function bestByDate(exId) {
+    var map = {};
+    exEntries(exId).forEach(function (e) {
+      var m = entryMax(e);
+      if (!map[e.date] || m > map[e.date]) map[e.date] = m;
+    });
+    return Object.keys(map).sort().map(function (d) { return { label: d, value: map[d] }; });
+  }
+
+  function weeklyVolume(exId, weeks) {
+    var buckets = [];
+    var cur = weekStart(new Date());
+    for (var i = weeks - 1; i >= 0; i--) {
+      var d = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate());
+      d.setDate(d.getDate() - i * 7);
+      buckets.push({ label: isoOf(d), total: 0 });
+    }
+    var index = {};
+    buckets.forEach(function (b) { index[b.label] = b; });
+
+    exEntries(exId).forEach(function (e) {
+      var key = isoOf(weekStart(parseISO(e.date)));
+      if (index[key]) index[key].total += entryTotal(e);
+    });
+    return buckets;
+  }
+
+  /* ---------------- progress ---------------- */
+
+  function renderProgress() {
+    var exId = state.ui.progressEx;
+    var list = exEntries(exId);
+
+    var total = 0, setsCount = 0, best = 0, bestDate = '', bestSession = 0, bestSessionDate = '';
+    var last30 = 0, prev30 = 0;
+    var today = parseISO(todayISO());
+
+    list.forEach(function (e) {
+      var t = entryTotal(e);
+      total += t;
+      setsCount += e.sets.length;
+      e.sets.forEach(function (s) {
+        if (s.reps > best) { best = s.reps; bestDate = e.date; }
+      });
+      if (t > bestSession) { bestSession = t; bestSessionDate = e.date; }
+      var diff = Math.round((today - parseISO(e.date)) / 86400000);
+      if (diff >= 0 && diff < 30) last30 += t;
+      else if (diff >= 30 && diff < 60) prev30 += t;
+    });
+
+    var avg = setsCount ? Math.round((total / setsCount) * 10) / 10 : 0;
+    var deltaHtml = '';
+    if (prev30 > 0 && last30 > 0) {
+      var pct = Math.round(((last30 - prev30) / prev30) * 100);
+      var cls = pct >= 0 ? 'up' : 'down';
+      var arrow = pct >= 0 ? '↑' : '↓';
+      deltaHtml = '<span class="delta ' + cls + '">' + arrow + ' ' + Math.abs(pct) + '%</span>';
+    }
+
+    var kpis = '';
+    if (!list.length) {
+      kpis = '<div class="empty" style="grid-column:1/-1">Пока нет записей по этому упражнению.<br>' +
+        'Добавьте тренировку — и здесь появятся цифры и графики.</div>';
+    } else {
+      kpis =
+        '<div class="kpi"><span class="kpi-label">Лучший подход</span>' +
+          '<span class="kpi-value num">' + fmtNum(best) + '</span>' +
+          '<span class="kpi-meta">' + fmtDate(bestDate) + '</span></div>' +
+        '<div class="kpi"><span class="kpi-label">За 30 дней</span>' +
+          '<span class="kpi-value num">' + fmtNum(last30) + '</span>' +
+          '<span class="kpi-meta">' + (deltaHtml || 'повторов') + '</span></div>' +
+        '<div class="kpi"><span class="kpi-label">Всего повторов</span>' +
+          '<span class="kpi-value num">' + fmtNum(total) + '</span>' +
+          '<span class="kpi-meta">' + fmtNum(list.length) + ' ' + trainWord(list.length) + '</span></div>' +
+        '<div class="kpi"><span class="kpi-label">Средний подход</span>' +
+          '<span class="kpi-value num">' + fmtAxis(avg) + '</span>' +
+          '<span class="kpi-meta">' + fmtNum(setsCount) + ' ' + plural(setsCount, 'подход', 'подхода', 'подходов') + '</span></div>';
+    }
+    $('#kpis').innerHTML = kpis;
+
+    var series = bestByDate(exId).slice(-60);
+    var lineW = $('#chart-best').clientWidth;
+    $('#chart-best').innerHTML = series.length
+      ? svgLine(series, EX[exId].color, lineW)
+      : '<div class="empty-chart">График появится после первой записи.</div>';
+
+    var weeks = weeklyVolume(exId, 12);
+    var barsW = $('#chart-volume').clientWidth;
+    $('#chart-volume').innerHTML = weeks.some(function (b) { return b.total > 0; })
+      ? svgBars(weeks, EX[exId].color, barsW)
+      : '<div class="empty-chart">Пока нет данных за последние 12 недель.</div>';
+
+    renderRecords();
+  }
+
+  function renderRecords() {
+    var html = EXERCISES.map(function (ex) {
+      var list = exEntries(ex.id);
+      var best = 0, bestDate = '', total = 0, bestSession = 0;
+      list.forEach(function (e) {
+        var t = entryTotal(e);
+        total += t;
+        if (t > bestSession) bestSession = t;
+        e.sets.forEach(function (s) {
+          if (s.reps > best) { best = s.reps; bestDate = e.date; }
+        });
+      });
+      return '<div class="record">' +
+        '<div class="record-head"><span class="dot" style="background:' + ex.color + '"></span>' + ex.label + '</div>' +
+        '<div class="record-val num">' + (best ? fmtNum(best) : '—') + '</div>' +
+        '<div class="record-meta">' + (best ? 'лучший подход · ' + fmtDate(bestDate) : 'нет данных') + '</div>' +
+        '<div class="record-total num">' + fmtNum(total) + ' <span class="muted" style="font-weight:500">всего</span>' +
+          (bestSession ? ' · ' + fmtNum(bestSession) + ' за тренировку' : '') + '</div>' +
+      '</div>';
+    }).join('');
+    $('#records').innerHTML = html;
+  }
+
+  function renderAll() {
+    syncSegments();
+    updateTotal();
+    renderRecent();
+    renderJournal();
+    renderProgress();
+  }
+
+  /* ---------------- tabs ---------------- */
+
+  function switchTab(tab) {
+    state.ui.tab = tab;
+    $$('.tab').forEach(function (b) {
+      var on = b.dataset.tab === tab;
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+    });
+    ['log', 'journal', 'progress'].forEach(function (t) {
+      var v = $('#view-' + t);
+      if (v) v.hidden = t !== tab;
+    });
+    renderAll();
+  }
+
+  /* ---------------- data io ---------------- */
+
+  function download(name, text, type) {
+    var blob = new Blob([text], { type: type });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1200);
+  }
+
+  function exportJSON() {
+    var payload = {
+      app: 'sport-diary',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      entries: state.entries
+    };
+    download('sport-diary-' + todayISO() + '.json', JSON.stringify(payload, null, 2), 'application/json');
+    toast('Экспортировано: ' + fmtNum(state.entries.length) + ' ' + plural(state.entries.length, 'запись', 'записи', 'записей'));
+    closeMenu();
+  }
+
+  function exportCSV() {
+    if (!state.entries.length) {
+      toast('Пока нечего экспортировать', 'err');
+      closeMenu();
+      return;
+    }
+    var rows = [['Дата', 'Упражнение', 'Подходы', 'Всего повторов', 'Вес, кг', 'Заметка']];
+    state.entries.slice().sort(compareAsc).forEach(function (e) {
+      rows.push([
+        e.date,
+        (EX[e.ex] || {}).label || e.ex,
+        e.sets.map(function (s) { return s.reps; }).join('+'),
+        entryTotal(e),
+        e.sets.map(function (s) { return s.weight === null ? '' : s.weight; }).join('/'),
+        e.note || ''
+      ]);
+    });
+    var csv = '\uFEFF' + rows.map(function (r) {
+      return r.map(function (cell) {
+        var s = String(cell);
+        return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      }).join(';');
+    }).join('\r\n');
+    download('sport-diary-' + todayISO() + '.csv', csv, 'text/csv;charset=utf-8');
+    toast('CSV сохранён');
+    closeMenu();
+  }
+
+  function importJSON(file) {
+    file.text().then(function (text) {
+      var data = JSON.parse(text);
+      var arr = Array.isArray(data) ? data : (data && Array.isArray(data.entries) ? data.entries : null);
+      if (!arr) throw new Error('bad format');
+      var normalized = arr.map(normalizeEntry).filter(Boolean);
+      if (!normalized.length) {
+        toast('В файле нет корректных записей', 'err');
+        return;
+      }
+      var known = {};
+      state.entries.forEach(function (e) { known[e.id] = true; });
+      var added = 0;
+      normalized.forEach(function (e) {
+        if (!known[e.id]) {
+          known[e.id] = true;
+          state.entries.push(e);
+          added++;
+        }
+      });
+      save();
+      renderAll();
+      toast(added ? 'Импортировано: ' + fmtNum(added) + ' ' + plural(added, 'запись', 'записи', 'записей') : 'Все записи уже есть');
+    }).catch(function (err) {
+      console.warn(err);
+      toast('Не удалось прочитать файл', 'err');
+    });
+  }
+
+  function clearAll() {
+    if (!state.entries.length) {
+      toast('Записей и так нет');
+      closeMenu();
+      return;
+    }
+    var ok = window.confirm('Удалить все записи (' + state.entries.length + ')? Действие необратимо.\n\nСначала лучше сделать «Экспорт в JSON».');
+    closeMenu();
+    if (!ok) return;
+    state.entries = [];
+    save();
+    resetForm();
+    renderAll();
+    toast('Все записи удалены');
+  }
+
+  function closeMenu() {
+    var menu = $('#data-menu');
+    if (menu) menu.open = false;
+  }
+
+  /* ---------------- events ---------------- */
+
+  function wire() {
+    $('#entry-form').addEventListener('submit', onSubmit);
+
+    $('#add-set').addEventListener('click', function () { addSetRow('', '', true); });
+
+    $('#sets').addEventListener('click', function (ev) {
+      var btn = ev.target.closest('.del');
+      if (!btn) return;
+      var row = btn.closest('.set-row');
+      var rows = $$('#sets .set-row');
+      if (rows.length <= 1) {
+        row.querySelector('.reps').value = '';
+        row.querySelector('.weight').value = '';
+      } else {
+        row.remove();
+      }
+      renumberSets();
+      updateTotal();
+    });
+
+    $('#sets').addEventListener('input', updateTotal);
+    $('#copy-last').addEventListener('click', copyLast);
+    $('#cancel-edit').addEventListener('click', cancelEdit);
+
+    $('#f-ex').addEventListener('click', function (ev) {
+      var b = ev.target.closest('.seg');
+      if (!b) return;
+      state.ui.ex = b.dataset.ex;
+      syncSegments();
+    });
+
+    $('#progress-ex').addEventListener('click', function (ev) {
+      var b = ev.target.closest('.seg');
+      if (!b) return;
+      state.ui.progressEx = b.dataset.ex;
+      renderProgress();
+      syncSegments();
+    });
+
+    $('#journal-filters').addEventListener('click', function (ev) {
+      var b = ev.target.closest('.chip');
+      if (!b) return;
+      state.ui.filter = b.dataset.filter;
+      syncSegments();
+      renderJournal();
+    });
+
+    $$('.tab').forEach(function (b) {
+      b.addEventListener('click', function () { switchTab(b.dataset.tab); });
+      b.addEventListener('keydown', function (ev) {
+        if (ev.key !== 'ArrowRight' && ev.key !== 'ArrowLeft') return;
+        ev.preventDefault();
+        var tabs = $$('.tab');
+        var i = tabs.indexOf(b);
+        var next = ev.key === 'ArrowRight' ? (i + 1) % tabs.length : (i - 1 + tabs.length) % tabs.length;
+        tabs[next].focus();
+        switchTab(tabs[next].dataset.tab);
+      });
+    });
+
+    $('#theme-toggle').addEventListener('click', function () {
+      state.theme = resolvedTheme() === 'dark' ? 'light' : 'dark';
+      try { localStorage.setItem(THEME_KEY, state.theme); } catch (err) { /* ignore */ }
+      applyTheme();
+    });
+
+    $('#install-btn').addEventListener('click', installNow);
+    $('#install-dismiss').addEventListener('click', function () {
+      hideInstallBanner();
+      try { localStorage.setItem('sport-diary.install-dismissed', '1'); } catch (err) { /* ignore */ }
+    });
+    $('#install-modal-close').addEventListener('click', function () {
+      $('#install-modal').hidden = true;
+    });
+    $('#install-modal').addEventListener('click', function (ev) {
+      if (ev.target === this) this.hidden = true;
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape') $('#install-modal').hidden = true;
+    });
+    window.addEventListener('beforeinstallprompt', function (ev) {
+      ev.preventDefault();
+      deferredPrompt = ev;
+      showInstallBanner();
+    });
+    window.addEventListener('appinstalled', function () {
+      deferredPrompt = null;
+      hideInstallBanner();
+      toast('Приложение установлено');
+    });
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (state.ui.tab === 'progress') renderProgress();
+      }, 150);
+    });
+
+    if (mqDark) {
+      var onChange = function () { if (!state.theme) applyTheme(); };
+      if (mqDark.addEventListener) mqDark.addEventListener('change', onChange);
+      else if (mqDark.addListener) mqDark.addListener(onChange);
+    }
+
+    $('#data-menu').addEventListener('click', function (ev) {
+      var b = ev.target.closest('button[data-action]');
+      if (!b) return;
+      var action = b.dataset.action;
+      if (action === 'install') { closeMenu(); installNow(); }
+      else if (action === 'export-json') exportJSON();
+      else if (action === 'export-csv') exportCSV();
+      else if (action === 'import') { closeMenu(); $('#import-file').click(); }
+      else if (action === 'system-theme') {
+        state.theme = null;
+        try { localStorage.removeItem(THEME_KEY); } catch (err) { /* ignore */ }
+        applyTheme();
+        closeMenu();
+        toast('Тема следует системной');
+      } else if (action === 'clear') clearAll();
+    });
+
+    $('#import-file').addEventListener('change', function (ev) {
+      var file = ev.target.files && ev.target.files[0];
+      ev.target.value = '';
+      if (file) importJSON(file);
+    });
+
+    document.addEventListener('click', function (ev) {
+      var menu = $('#data-menu');
+      if (menu && menu.open && !menu.contains(ev.target)) menu.open = false;
+    });
+
+    document.addEventListener('click', function (ev) {
+      var goto = ev.target.closest('[data-goto]');
+      if (goto) { switchTab(goto.dataset.goto); return; }
+
+      var btn = ev.target.closest('[data-act]');
+      if (!btn) return;
+      var article = btn.closest('.entry');
+      if (!article) return;
+      var id = article.dataset.id;
+      var act = btn.dataset.act;
+      if (act === 'edit') startEdit(id);
+      else if (act === 'dup') duplicateEntry(id);
+      else if (act === 'del') {
+        var entry = state.entries.find(function (x) { return x.id === id; });
+        if (!entry) return;
+        if (!window.confirm('Удалить запись: ' + EX[entry.ex].label + ', ' + fmtDate(entry.date) + '?')) return;
+        state.entries = state.entries.filter(function (x) { return x.id !== id; });
+        if (state.ui.editId === id) resetForm(true);
+        save();
+        renderAll();
+        toast('Запись удалена');
+      }
+    });
+  }
+
+  /* ---------------- init ---------------- */
+
+  function init() {
+    loadState();
+    applyTheme();
+    registerServiceWorker();
+    buildStaticUI();
+    $('#f-date').value = todayISO();
+    fillSets([]);
+    wire();
+    switchTab('log');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
