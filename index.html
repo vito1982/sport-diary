@@ -142,10 +142,11 @@
   .sets-head{display:flex;align-items:baseline;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;margin:18px 0 8px}
   .sets-head>span:first-child{font-size:11.5px;font-weight:650;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
   .sets{display:grid;gap:8px}
-  .set-row{display:grid;grid-template-columns:24px minmax(0,1fr) 32px;align-items:center;gap:8px;max-width:300px}
+  .set-row{display:grid;grid-template-columns:24px minmax(0,1fr) 32px;align-items:center;gap:8px;max-width:520px}
   .set-num{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
   .set-row .icon-btn{width:32px;height:32px;font-size:13px}
   .form-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .add-set{flex:0 1 300px;justify-content:center}
   .spacer{flex:1 1 auto}
   .form-total{font-weight:700;color:var(--muted);font-size:14px;white-space:nowrap}
   .edit-banner{
@@ -261,7 +262,7 @@
     .set-row{grid-template-columns:20px minmax(0,1fr) 32px;gap:6px}
     .form-actions{gap:8px;margin-top:14px}
     .form-actions .spacer{display:none}
-    #add-set,#copy-last{flex:1 1 auto;justify-content:center}
+    #add-set{flex:1 1 100%;justify-content:center;padding:11px 15px}
     .form-total{order:1;margin-right:auto;font-size:13px}
     #save-btn{order:2;flex:1 1 42%;justify-content:center}
     #cancel-edit{order:3;flex:1 1 100%;justify-content:center}
@@ -270,6 +271,10 @@
     #f-ex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
     #f-ex .seg{justify-content:center;padding:9px 4px;font-size:12.5px;gap:4px}
     #f-ex .seg .dot{width:6px;height:6px}
+    #journal-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    #journal-filters .chip{justify-content:center}
+    .entry-total{display:none}
+    .entry-sets::after{content:" · " attr(data-total)}
     .kpi-value{font-size:24px}
     .entry{padding:11px 12px}
     .entry-actions .icon-btn{width:30px;height:30px}
@@ -345,8 +350,7 @@
         <div id="sets" class="sets"></div>
 
         <div class="form-actions">
-          <button type="button" id="add-set" class="btn ghost">+ подход</button>
-          <button type="button" id="copy-last" class="btn ghost">Как в прошлый раз</button>
+          <button type="button" id="add-set" class="btn ghost add-set">+ подход</button>
           <span class="spacer"></span>
           <span id="form-total" class="form-total num">0 повторов</span>
           <button type="submit" id="save-btn" class="btn primary">Сохранить</button>
@@ -863,31 +867,21 @@
     if (form.scrollIntoView) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function copyLast() {
-    var list = exEntries(state.ui.ex);
-    var last = list.length ? list[list.length - 1] : null;
-    if (!last) {
-      toast('Нет прошлых записей по этому упражнению', 'err');
-      return;
-    }
-    fillSets(last.sets);
-    toast('Подходы из записи ' + fmtDate(last.date));
-  }
-
   /* ---------------- rendering ---------------- */
 
   function entryHtml(e) {
     var ex = EX[e.ex] || { label: e.ex, color: '#94a3b8' };
     var total = entryTotal(e);
+    var totalTxt = fmtNum(total) + ' ' + repsWord(total);
     var setsTxt = e.sets.map(function (s) { return s.reps; }).join(' + ');
     return '<article class="entry" data-id="' + e.id + '">' +
       '<span class="dot" style="background:' + ex.color + '"></span>' +
       '<div class="entry-main">' +
         '<div class="entry-top">' +
           '<span class="entry-ex">' + ex.label + '</span>' +
-          '<span class="entry-total num">' + fmtNum(total) + ' ' + repsWord(total) + '</span>' +
+          '<span class="entry-total num">' + totalTxt + '</span>' +
         '</div>' +
-        '<div class="entry-sets">' + setsTxt + '</div>' +
+        '<div class="entry-sets" data-total="' + totalTxt + '">' + setsTxt + '</div>' +
       '</div>' +
       '<div class="entry-actions">' +
         '<button type="button" class="icon-btn" data-act="edit" title="Изменить" aria-label="Изменить запись">✎</button>' +
@@ -1347,7 +1341,6 @@
     });
 
     $('#sets').addEventListener('input', updateTotal);
-    $('#copy-last').addEventListener('click', copyLast);
     $('#cancel-edit').addEventListener('click', cancelEdit);
 
     $('#f-ex').addEventListener('click', function (ev) {
