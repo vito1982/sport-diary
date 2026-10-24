@@ -57,6 +57,7 @@
   body{
     margin:0;
     min-height:100vh;
+    overflow-x:hidden;
     font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     font-size:15px;
     line-height:1.45;
@@ -112,6 +113,13 @@
 
   main{display:grid;gap:16px}
   main>section{display:grid;gap:16px}
+  @keyframes view-in-right{from{opacity:.35;transform:translateX(26px)}to{opacity:1;transform:none}}
+  @keyframes view-in-left{from{opacity:.35;transform:translateX(-26px)}to{opacity:1;transform:none}}
+  main>section.anim-right{animation:view-in-right .2s ease-out}
+  main>section.anim-left{animation:view-in-left .2s ease-out}
+  @media (prefers-reduced-motion:reduce){
+    main>section.anim-right,main>section.anim-left{animation:none}
+  }
 
   /* cards */
   .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
@@ -1203,17 +1211,34 @@
 
   /* ---------------- tabs ---------------- */
 
+  var TAB_ORDER = ['log', 'journal', 'progress'];
+
   function switchTab(tab) {
+    var prev = state.ui.tab;
+    var prevIndex = TAB_ORDER.indexOf(prev);
+    var nextIndex = TAB_ORDER.indexOf(tab);
+    var dir = nextIndex > prevIndex ? 'right' : 'left';
+
     state.ui.tab = tab;
     $$('.tab').forEach(function (b) {
       var on = b.dataset.tab === tab;
       b.setAttribute('aria-selected', String(on));
       b.tabIndex = on ? 0 : -1;
     });
-    ['log', 'journal', 'progress'].forEach(function (t) {
+    TAB_ORDER.forEach(function (t) {
       var v = $('#view-' + t);
       if (v) v.hidden = t !== tab;
     });
+
+    if (prev !== tab) {
+      var section = $('#view-' + tab);
+      if (section) {
+        section.classList.remove('anim-left', 'anim-right');
+        void section.offsetWidth;
+        section.classList.add(dir === 'right' ? 'anim-right' : 'anim-left');
+      }
+      if (window.scrollY > 0) window.scrollTo(0, 0);
+    }
     renderAll();
   }
 
@@ -1342,6 +1367,40 @@
 
     $('#sets').addEventListener('input', updateTotal);
     $('#cancel-edit').addEventListener('click', cancelEdit);
+
+    // Свайп влево/вправо переключает вкладки
+    var mainEl = document.querySelector('main');
+    if (mainEl) {
+      var swipe = { x: 0, y: 0, active: false, blocked: false };
+
+      mainEl.addEventListener('touchstart', function (ev) {
+        if (ev.touches.length !== 1) { swipe.active = false; return; }
+        var t = ev.touches[0];
+        var target = ev.target;
+        swipe.x = t.clientX;
+        swipe.y = t.clientY;
+        swipe.active = true;
+        swipe.blocked = (t.clientX < 24 || t.clientX > window.innerWidth - 24) ||
+          !!(target && target.closest && target.closest('input, textarea, select, .tabs, .modal'));
+      }, { passive: true });
+
+      mainEl.addEventListener('touchend', function (ev) {
+        if (!swipe.active) return;
+        swipe.active = false;
+        if (swipe.blocked) return;
+        var t = ev.changedTouches && ev.changedTouches[0];
+        if (!t) return;
+        var dx = t.clientX - swipe.x;
+        var dy = t.clientY - swipe.y;
+        if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+        var i = TAB_ORDER.indexOf(state.ui.tab);
+        var next = dx < 0 ? i + 1 : i - 1;
+        if (next < 0 || next >= TAB_ORDER.length) return;
+        switchTab(TAB_ORDER[next]);
+      }, { passive: true });
+
+      mainEl.addEventListener('touchcancel', function () { swipe.active = false; }, { passive: true });
+    }
 
     $('#f-ex').addEventListener('click', function (ev) {
       var b = ev.target.closest('.seg');
